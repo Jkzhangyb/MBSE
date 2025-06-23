@@ -1,0 +1,288 @@
+{
+  "users": [
+    {
+      "id": "user-admin-01",
+      "name": "Admin",
+      "role": "平台管理员",
+      "avatarUrl": "https://i.pravatar.cc/150?u=user-admin-01"
+    },
+    {
+      "id": "user-pm-01",
+      "name": "王经理",
+      "role": "项目经理",
+      "avatarUrl": "https://i.pravatar.cc/150?u=user-pm-01"
+    },
+    {
+      "id": "user-arch-01",
+      "name": "张工",
+      "role": "系统架构师",
+      "avatarUrl": "https://i.pravatar.cc/150?u=user-arch-01"
+    },
+    {
+      "id": "user-sim-01",
+      "name": "李工",
+      "role": "仿真工程师",
+      "avatarUrl": "https://i.pravatar.cc/150?u=user-sim-01"
+    },
+    {
+      "id": "user-model-01",
+      "name": "赵工",
+      "role": "建模工程师",
+      "avatarUrl": "https://i.pravatar.cc/150?u=user-model-01"
+    }
+  ],
+  "widgetLibrary": [
+    { "id": "widget-todo", "title": "我的待办", "description": "显示所有待处理、进行中和已完成的任务。", "componentName": "TodoWidget" },
+    { "id": "widget-gantt", "title": "项目甘特图", "description": "以甘特图形式展示项目进度和任务依赖。", "componentName": "ProjectGanttWidget" },
+    { "id": "widget-kanban", "title": "任务看板", "description": "以看板视图管理任务状态。", "componentName": "TaskKanbanWidget" },
+    { "id": "widget-im", "title": "即时通讯", "description": "团队沟通和协作的窗口。", "componentName": "InstantMessageWidget" },
+    { "id": "widget-notification", "title": "通知中心", "description": "聚合所有与您相关的系统通知。", "componentName": "NotificationCenterWidget" },
+    { "id": "widget-model-library", "title": "模型库", "description": "浏览、搜索和管理所有系统模型。", "componentName": "ModelLibraryWidget" },
+    { "id": "widget-sim-queue", "title": "仿真任务队列", "description": "监控所有仿真任务的状态和进度。", "componentName": "SimulationQueueWidget" },
+    { "id": "widget-sys-monitor", "title": "系统资源监控", "description": "查看平台CPU、内存和存储使用情况。", "componentName": "SystemMonitorWidget" },
+    { "id": "widget-user-activity", "title": "活跃用户数", "description": "实时统计在线和活跃用户。", "componentName": "UserActivityWidget" },
+    { "id": "widget-service-health", "title": "服务健康状态", "description": "监控平台核心服务的运行状态。", "componentName": "ServiceHealthWidget" }
+  ],
+  "desktopLayouts": {
+    "user-admin-01": [
+      { "widgetId": "widget-sys-monitor", "x": 0, "y": 0, "w": 6, "h": 2 },
+      { "widgetId": "widget-service-health", "x": 6, "y": 0, "w": 6, "h": 2 },
+      { "widgetId": "widget-user-activity", "x": 0, "y": 2, "w": 12, "h": 2 }
+    ],
+    "user-pm-01": [
+      { "widgetId": "widget-todo", "x": 0, "y": 0, "w": 4, "h": 4 },
+      { "widgetId": "widget-gantt", "x": 4, "y": 0, "w": 8, "h": 2 },
+      { "widgetId": "widget-kanban", "x": 4, "y": 2, "w": 8, "h": 2 },
+      { "widgetId": "widget-im", "x": 0, "y": 4, "w": 12, "h": 2 }
+    ],
+    "user-arch-01": [
+      { "widgetId": "widget-todo", "x": 0, "y": 0, "w": 4, "h": 4 },
+      { "widgetId": "widget-model-library", "x": 4, "y": 0, "w": 8, "h": 4 },
+      { "widgetId": "widget-im", "x": 0, "y": 4, "w": 12, "h": 2 }
+    ],
+    "user-sim-01": [
+      { "widgetId": "widget-sim-queue", "x": 0, "y": 0, "w": 12, "h": 3 },
+      { "widgetId": "widget-todo", "x": 0, "y": 3, "w": 5, "h": 3 },
+      { "widgetId": "widget-model-library", "x": 5, "y": 3, "w": 7, "h": 3 }
+    ],
+    "user-model-01": [
+      { "widgetId": "widget-todo", "x": 0, "y": 0, "w": 12, "h": 3 },
+      { "widgetId": "widget-im", "x": 0, "y": 3, "w": 6, "h": 3 },
+      { "widgetId": "widget-model-library", "x": 6, "y": 3, "w": 6, "h": 3 }
+    ]
+  },
+  "notifications": [
+    {
+      "id": "notif-001",
+      "recipientId": "user-model-01",
+      "type": "task_assigned",
+      "title": "新任务：设计推进器初步模型",
+      "content": "王经理 在项目「XN-23 推进系统」中分配了新任务给您。",
+      "relatedObjectId": "todo-001",
+      "isRead": false,
+      "timestamp": "2023-10-27T09:05:00Z"
+    },
+    {
+      "id": "notif-002",
+      "recipientId": "user-arch-01",
+      "type": "review_request",
+      "title": "评审请求：推进器模型 V1.0",
+      "content": "赵工 提交了模型「推进器模型 V1.0」待您评审。",
+      "relatedObjectId": "model-101",
+      "isRead": false,
+      "timestamp": "2023-10-27T14:00:00Z"
+    },
+    {
+      "id": "notif-003",
+      "recipientId": "user-sim-01",
+      "type": "mention",
+      "title": "王经理在群聊中@了你",
+      "content": "王经理: @李工 请基于最新模型跑一次热力学仿真。",
+      "relatedObjectId": "channel-proj-xn23",
+      "isRead": true,
+      "timestamp": "2023-10-26T11:30:00Z"
+    },
+    {
+      "id": "notif-004",
+      "recipientId": "user-pm-01",
+      "type": "simulation_completed",
+      "title": "仿真完成：热力学分析",
+      "content": "仿真任务「热力学分析-V1.0」已成功完成。",
+      "relatedObjectId": "sim-501",
+      "isRead": false,
+      "timestamp": "2023-10-27T16:45:00Z"
+    },
+    {
+      "id": "notif-005",
+      "recipientId": "user-arch-01",
+      "type": "task_assigned",
+      "title": "新任务：跟进A模块接口定义",
+      "content": "王经理 在项目「XN-23 推进系统」中分配了新任务给您，该任务由IM消息转化而来。",
+      "relatedObjectId": "todo-003",
+      "isRead": false,
+      "timestamp": "2023-10-27T10:15:00Z"
+    }
+  ],
+  "todos": [
+    {
+      "id": "todo-001",
+      "title": "设计推进器初步模型",
+      "assigneeId": "user-model-01",
+      "creatorId": "user-pm-01",
+      "projectId": "proj-xn23",
+      "status": "in-progress",
+      "dueDate": "2023-10-30T23:59:59Z",
+      "description": "根据PRD v2.0中的需求，完成推进器核心部分的初步三维模型设计。"
+    },
+    {
+      "id": "todo-002",
+      "title": "评审推进器模型 V1.0",
+      "assigneeId": "user-arch-01",
+      "creatorId": "system",
+      "projectId": "proj-xn23",
+      "status": "pending",
+      "dueDate": "2023-10-28T23:59:59Z",
+      "description": "评审赵工提交的「推进器模型 V1.0」，重点检查接口兼容性和结构合理性。"
+    },
+    {
+      "id": "todo-003",
+      "title": "跟进A模块接口定义",
+      "assigneeId": "user-arch-01",
+      "creatorId": "user-pm-01",
+      "projectId": "proj-xn23",
+      "status": "pending",
+      "dueDate": "2023-10-27T23:59:59Z",
+      "description": "源自IM讨论：'目前A模块的接口定义不清晰，需要跟进一下。'"
+    },
+    {
+      "id": "todo-004",
+      "title": "准备项目周会报告",
+      "assigneeId": "user-pm-01",
+      "creatorId": "user-pm-01",
+      "projectId": "proj-xn23",
+      "status": "completed",
+      "dueDate": "2023-10-26T23:59:59Z",
+      "description": "总结本周项目进展，准备周五会议的汇报材料。"
+    }
+  ],
+  "imData": {
+    "channels": [
+      {
+        "id": "channel-proj-xn23",
+        "name": "# 项目-XN-23推进系统",
+        "members": ["user-pm-01", "user-arch-01", "user-sim-01", "user-model-01"],
+        "messages": [
+          {
+            "id": "msg-ch-001",
+            "senderId": "user-pm-01",
+            "content": { "type": "text", "text": "各位，项目启动会纪要已上传，请查阅。" },
+            "timestamp": "2023-10-27T09:00:00Z"
+          },
+          {
+            "id": "msg-ch-002",
+            "senderId": "user-model-01",
+            "content": { "type": "text", "text": "收到，我正在进行初步建模。@张工 V1.0模型预计下午提交评审。" },
+            "timestamp": "2023-10-27T09:30:00Z"
+          },
+          {
+            "id": "msg-ch-003",
+            "senderId": "user-pm-01",
+            "content": { "type": "text", "text": "目前A模块的接口定义不清晰，需要跟进一下。" },
+            "timestamp": "2023-10-27T10:14:00Z"
+          },
+          {
+            "id": "msg-ch-004",
+            "senderId": "system",
+            "content": {
+              "type": "card",
+              "objectType": "todo",
+              "objectId": "todo-003",
+              "text": "任务已创建并指派给 @张工"
+            },
+            "timestamp": "2023-10-27T10:15:00Z"
+          },
+          {
+            "id": "msg-ch-005",
+            "senderId": "user-sim-01",
+            "content": {
+              "type": "card",
+              "objectType": "simulation",
+              "objectId": "sim-501",
+              "text": "仿真任务已完成，结果看起来不错，分享给大家。"
+            },
+            "timestamp": "2023-10-27T16:50:00Z"
+          }
+        ]
+      }
+    ],
+    "directMessages": [
+      {
+        "id": "dm-arch-pm-01",
+        "members": ["user-arch-01", "user-pm-01"],
+        "messages": [
+          {
+            "id": "msg-dm-001",
+            "senderId": "user-arch-01",
+            "content": {
+              "type": "card",
+              "objectType": "model",
+              "objectId": "model-101",
+              "text": "关于这个模型的评审，我发现一个潜在的结构风险，我们需要讨论一下。"
+            },
+            "timestamp": "2023-10-27T15:00:00Z"
+          },
+          {
+            "id": "msg-dm-002",
+            "senderId": "user-pm-01",
+            "content": { "type": "text", "text": "收到，我正在看。请详细说明一下风险点。" },
+            "timestamp": "2023-10-27T15:01:00Z"
+          }
+        ]
+      }
+    ]
+  },
+  "businessObjects": {
+    "projects": [
+      {
+        "id": "proj-xn23",
+        "name": "XN-23 推进系统",
+        "managerId": "user-pm-01",
+        "description": "新一代星际飞船的离子推进器系统研发项目。"
+      }
+    ],
+    "models": [
+      {
+        "id": "model-101",
+        "name": "推进器模型 V1.0",
+        "version": "1.0",
+        "projectId": "proj-xn23",
+        "status": "in_review",
+        "creatorId": "user-model-01"
+      },
+      {
+        "id": "model-102",
+        "name": "冷却系统模型 V2.1",
+        "version": "2.1",
+        "projectId": "proj-xn23",
+        "status": "approved",
+        "creatorId": "user-model-01"
+      }
+    ],
+    "simulations": [
+      {
+        "id": "sim-501",
+        "name": "热力学分析-V1.0",
+        "modelId": "model-101",
+        "status": "completed",
+        "requesterId": "user-sim-01"
+      },
+      {
+        "id": "sim-502",
+        "name": "结构应力分析-V1.0",
+        "modelId": "model-101",
+        "status": "queued",
+        "requesterId": "user-sim-01"
+      }
+    ]
+  }
+}

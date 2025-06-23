@@ -1,0 +1,38 @@
+[
+  {
+    "id": "sim-801",
+    "name": "高速工况能耗测试-V2.1模型",
+    "status": "Completed",
+    "initiator": "赵敏",
+    "createTime": "2024-05-19T11:05:00Z",
+    "duration": "45min",
+    "resultSummaryUrl": "/api/results/sim-801"
+  },
+  {
+    "id": "sim-802",
+    "name": "电池热失控边界条件分析",
+    "status": "Running",
+    "initiator": "赵敏",
+    "createTime": "2024-05-20T14:30:00Z",
+    "duration": "1h 15min (est.)",
+    "resultSummaryUrl": null
+  },
+  {
+    "id": "sim-803",
+    "name": "紧急制动性能评估-V3.1刹车模型",
+    "status": "Failed",
+    "initiator": "刘芳",
+    "createTime": "2024-05-18T16:00:00Z",
+    "duration": "5min",
+    "resultSummaryUrl": "/api/results/sim-803"
+  },
+  {
+    "id": "sim-804",
+    "name": "城市拥堵工况NVH分析",
+    "status": "Queued",
+    "initiator": "赵敏",
+    "createTime": "2024-05-20T15:00:00Z",
+    "duration": null,
+    "resultSummaryUrl": null
+  }
+]
