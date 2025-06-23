@@ -1,5 +1,7 @@
+
+let currentRole = '';
 const roleConfig = {
- roleConfig = {
+
   admin: {
     title: '平台管理员',
     sidebar: ['系统监控','成员管理','角色分配'],
@@ -39,6 +41,8 @@ function login() {
 
 function showConsole(role) {
   const cfg = roleConfig[role];
+
+  currentRole = role;
   document.getElementById('login').classList.add('hidden');
   document.getElementById('console').classList.remove('hidden');
   document.getElementById('roleTitle').textContent = cfg.title + ' 控制台';
@@ -50,7 +54,7 @@ function showConsole(role) {
 
   const msgs = cfg.messages || [];
   document.getElementById('messageCenter').textContent = `消息(${msgs.length})`;
-  document.getElementById('messageList').innerHTML = msgs.map(m => `<li>${m}</li>`).join('');
+  document.getElementById('messageList').innerHTML = msgs.map(m=>`<li>${m}</li>`).join('');
 
   loadLayout(role);
 }
@@ -79,6 +83,12 @@ function createModules(cfg) {
     const sec = document.createElement('section');
     sec.id = 'mod-' + name;
     sec.textContent = name + ' 内容区域';
+
+    sec.draggable = true;
+    sec.ondragstart = dragStart;
+    sec.ondragover = dragOver;
+    sec.ondrop = drop;
+
     container.appendChild(sec);
   });
 }
@@ -119,6 +129,26 @@ function activateTab(name) {
   });
 }
 
+
+let dragSrc;
+function dragStart(e) {
+  dragSrc = e.currentTarget;
+}
+
+function dragOver(e) {
+  e.preventDefault();
+}
+
+function drop(e) {
+  e.preventDefault();
+  if (dragSrc && dragSrc !== e.currentTarget) {
+    const container = dragSrc.parentNode;
+    container.insertBefore(dragSrc, e.currentTarget.nextSibling);
+    saveLayout();
+  }
+}
+
+
 function toggleTheme() {
   document.body.classList.toggle('dark');
   localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : '');
@@ -126,29 +156,42 @@ function toggleTheme() {
 
 function loadLayout(role) {
   const layout = JSON.parse(localStorage.getItem('layout-' + role) || '{}');
-  Object.keys(layout).forEach(k => {
-    toggleModule(k, layout[k]);
-    const chk = Array.from(document.querySelectorAll('#sidebar input')).find(i => i.nextSibling.textContent.trim() === k);
-    if (chk) chk.checked = layout[k];
-  });
+
+  if (layout.order) {
+    const container = document.getElementById('tab-overview');
+    layout.order.forEach(name => {
+      const sec = document.getElementById('mod-' + name);
+      if (sec) container.appendChild(sec);
+    });
+  }
+  if (layout.visibility) {
+    Object.keys(layout.visibility).forEach(k => {
+      toggleModule(k, layout.visibility[k]);
+      const chk = Array.from(document.querySelectorAll('#sidebar input')).find(i => i.nextSibling.textContent.trim() === k);
+      if (chk) chk.checked = layout.visibility[k];
+    });
+  }
+
   const savedTheme = localStorage.getItem('theme');
   if (savedTheme === 'dark') document.body.classList.add('dark');
 }
 
 function saveLayout() {
-  const role = document.getElementById('roleTitle').textContent.replace(' 控制台','');
-  const layout = {};
+
+  const role = currentRole;
+  const visibility = {};
   document.querySelectorAll('#sidebar div').forEach(div => {
     const name = div.querySelector('span').textContent.trim();
     const checked = div.querySelector('input').checked;
-    layout[name] = checked;
+    visibility[name] = checked;
   });
-  localStorage.setItem('layout-' + role, JSON.stringify(layout));
+  const order = Array.from(document.querySelectorAll('#tab-overview section')).map(sec => sec.id.replace('mod-',''));
+  localStorage.setItem('layout-' + role, JSON.stringify({order, visibility}));
+
 }
 
 window.addEventListener('DOMContentLoaded', () => {
   const theme = localStorage.getItem('theme');
   if (theme === 'dark') document.body.classList.add('dark');
 });
-}
 
