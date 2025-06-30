@@ -8,6 +8,7 @@ import logo from './assets/react.svg';
 import createImg from './assets/createworkflow.png';
 import editImg from './assets/editworkflow.png';
 import publishImg from './assets/publishworkflow.png';
+import BpmnModeler from './BpmnModeler';
 
 // 模板预览组件
 const TemplatePreview = ({ template, onClose }) => {
@@ -615,6 +616,7 @@ export default function WorkflowHome({ onCreateWorkflow }) {
   const [selectedTag, setSelectedTag] = useState('全部');
   const [showBpmnModal, setShowBpmnModal] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState(null);
+  const [selectedWorkflow, setSelectedWorkflow] = useState(null);
   const [selectedPhase, setSelectedPhase] = useState('全部');
   const [showWorkflowDefModal, setShowWorkflowDefModal] = useState(false);
   const [workflowDefForm, setWorkflowDefForm] = useState({
@@ -678,7 +680,10 @@ export default function WorkflowHome({ onCreateWorkflow }) {
   // 操作按钮渲染
   const renderActions = (row) => (
     <div className="actions-container">
-      <button className="action-btn edit">编辑</button>
+      <button className="action-btn edit" onClick={() => {
+        setSelectedWorkflow(row);
+        setShowBpmnModal(true);
+      }}>编辑</button>
       <button className="action-btn publish" onClick={() => handlePublish(row)}>发布</button>
       
       {/* 更多操作下拉菜单 */}
@@ -1452,15 +1457,21 @@ export default function WorkflowHome({ onCreateWorkflow }) {
         </div>
       )}
       {/* BPMN建模器弹窗（只负责顶部模板提示，实际建模器内容在App中） */}
-      {showBpmnModal && selectedTemplate && (
+      {showBpmnModal && selectedWorkflow && (
         <div style={{position:'fixed',top:0,left:0,width:'100vw',height:'100vh',background:'rgba(0,0,0,0.25)',zIndex:1000,display:'flex',alignItems:'center',justifyContent:'center'}}>
           <div style={{background:'#fff',borderRadius:8,boxShadow:'0 4px 24px rgba(0,0,0,0.12)',padding:0,minWidth:1200,minHeight:700,position:'relative'}}>
             <div style={{background:'#e3f0ff',color:'#1976d2',fontWeight:500,padding:'8px 24px',borderRadius:'8px 8px 0 0',fontSize:16,marginBottom:8}}>
-              基于模板「{selectedTemplate.name}」创建
+              编辑工作流「{selectedWorkflow.name}」
             </div>
-            <button style={{position:'absolute',top:18,right:32,zIndex:10,background:'none',border:'none',borderRadius:'50%',width:36,height:36,cursor:'pointer',boxShadow:'none',display:'flex',alignItems:'center',justifyContent:'center',padding:0}} onClick={handleCloseBpmnModal}>
+            <button style={{position:'absolute',top:18,right:32,zIndex:10,background:'none',border:'none',borderRadius:'50%',width:36,height:36,cursor:'pointer',boxShadow:'none',display:'flex',alignItems:'center',justifyContent:'center',padding:0}} onClick={() => {
+              setShowBpmnModal(false);
+              setSelectedWorkflow(null);
+            }}>
               <img src={closeIcon} alt="关闭" style={{width:20,height:20}} />
             </button>
+            <div style={{height:'620px',width:'100%'}}>
+              <BpmnModeler workflow={selectedWorkflow} />
+            </div>
           </div>
         </div>
       )}
@@ -1661,4 +1672,4 @@ export default function WorkflowHome({ onCreateWorkflow }) {
       )}
     </div>
   );
-} 
+}
