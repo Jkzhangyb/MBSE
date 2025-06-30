@@ -736,25 +736,38 @@ function App() {
   // 处理BPMN节点点击，兼容 bpmn-js 业务对象
   const handleNodeClick = (element) => {
     const bo = element.businessObject || element;
+    console.log('[handleNodeClick] element:', element);
+    console.log('[handleNodeClick] bo:', bo);
+    // 兼容bpmn-js ModdleElement的类型判断
+    const isServiceTask = (bo.$type === 'bpmn:ServiceTask' || bo.type === 'bpmn:serviceTask' || (typeof bo.$instanceOf === 'function' && bo.$instanceOf('bpmn:ServiceTask')));
+    const isTask = (bo.$type === 'bpmn:Task' || bo.type === 'bpmn:task' || (typeof bo.$instanceOf === 'function' && bo.$instanceOf('bpmn:Task')));
     // 专属配置：链接需求服务
     if (
-      (bo.$type === 'bpmn:ServiceTask' || bo.type === 'bpmn:serviceTask') &&
+      isServiceTask &&
       (bo.name === '链接需求服务' || bo.id === 'Activity_1450w8g')
+    ) {
+      setSelectedNode({ type: 'bpmn:serviceTask', node: bo });
+      return;
+    }
+    // 专属配置：需求同步
+    if (
+      isServiceTask &&
+      (bo.name === '需求同步' || bo.name === '同步需求')
     ) {
       setSelectedNode({ type: 'bpmn:serviceTask', node: bo });
       return;
     }
     // 专属配置：需求创建
     if (
-      (bo.$type === 'bpmn:Task' || bo.type === 'bpmn:task') &&
+      isTask &&
       (bo.name === '需求创建' || bo.id === 'Activity_0g4gw4o')
     ) {
       setSelectedNode({ type: 'bpmn:task', node: bo });
       return;
     }
-    // 其它 BPMN 节点通用处理（所有层级的 task/service/userTask/subProcess/event 等）
-    if (bo.$type && bo.id) {
-      setSelectedNode({ type: bo.$type.replace('bpmn:', 'bpmn:'), node: bo });
+    // 其它 BPMN 节点通用处理
+    if ((bo.$type || bo.type) && bo.id) {
+      setSelectedNode({ type: (bo.$type || bo.type).replace('bpmn:', 'bpmn:'), node: bo });
       return;
     }
     // 兼容旧数据结构
@@ -793,12 +806,16 @@ function App() {
   // 属性面板内容
   let panelContent = <div style={{padding: 16, color: '#222'}}>请选择主节点或子节点</div>;
   if (selectedNode) {
+    console.log('[属性面板] selectedNode:', selectedNode);
     // 针对 BPMN 画布节点，按类型弹出不同配置卡片
     const bo = selectedNode.node;
     if (selectedNode.type === 'bpmn:serviceTask') {
       // 针对"链接需求服务"节点展示专属配置，其它服务任务展示通用卡片
       if (bo.name === '链接需求服务' || bo.id === 'Activity_1450w8g') {
         panelContent = <RestConnectorProperties element={bo} />;
+      } else if (bo.name === '需求同步' || bo.name === '同步需求') {
+        // 新增：BPMN画布点击需求同步节点时弹出专属配置
+        panelContent = <SyncRequirementConfig />;
       } else {
         panelContent = (
           <div style={{padding: 20}}>
@@ -856,20 +873,36 @@ function App() {
       );
     } else if (selectedNode.type === 'main') {
       const n = selectedNode.node;
-      panelContent = (
-        <div style={{padding: 16}}>
-          <h3>{n.data?.label || n.name}</h3>
-          <div>主节点ID: {n.id}</div>
-        </div>
-      );
+      // 新增：功能与架构设计主节点专属配置
+      if (n.data?.label === '🛠 功能与架构设计') {
+        panelContent = (
+          <div style={{padding: 20}}>
+            <div style={{fontWeight:'bold',fontSize:18,marginBottom:8}}>功能与架构设计配置</div>
+            <div style={{marginBottom:8}}>此处可配置架构设计相关参数、说明等内容。</div>
+            <div style={{marginBottom:8}}>主节点ID：<input style={{width:'80%'}} value={n.id||''} readOnly /></div>
+          </div>
+        );
+      } else {
+        panelContent = (
+          <div style={{padding: 16}}>
+            <h3>{n.data?.label || n.name}</h3>
+            <div>主节点ID: {n.id}</div>
+          </div>
+        );
+      }
     } else if (selectedNode.type === 'sub') {
       const sn = selectedNode.node;
-      panelContent = (
-        <div style={{padding: 16}}>
-          <h3>{sn.label || sn.name}</h3>
-          <div>子节点ID: {sn.id}</div>
-        </div>
-      );
+      // 修正：支持'需求同步'和'同步需求'都弹出配置
+      if (sn.label === '同步需求' || sn.label === '需求同步') {
+        panelContent = <SyncRequirementConfig />;
+      } else {
+        panelContent = (
+          <div style={{padding: 16}}>
+            <h3>{sn.label || sn.name}</h3>
+            <div>子节点ID: {sn.id}</div>
+          </div>
+        );
+      }
     }
   }
 
@@ -918,6 +951,166 @@ function App() {
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+// 新增：同步需求节点配置组件
+function SyncRequirementConfig() {
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+  // 假数据
+  const [source, setSource] = useState('Polarion');
+  const [syncId, setSyncId] = useState('REQ-101');
+  const [syncType, setSyncType] = useState('全量同步');
+  const [owner, setOwner] = useState('张三');
+  const [remark, setRemark] = useState('');
+
+  const sourceOptions = [
+    { value: 'Polarion', label: 'Polarion' },
+    { value: 'Doors', label: 'Doors' }
+  ];
+  const syncTypeOptions = [
+    { value: '全量同步', label: '全量同步' },
+    { value: '增量同步', label: '增量同步' },
+    { value: '手动选择', label: '手动选择' }
+  ];
+  const idOptions = source === 'Polarion'
+    ? [
+        { value: 'REQ-101', label: '动力电池包需求' },
+        { value: 'REQ-102', label: '整车热管理需求' },
+        { value: 'REQ-104', label: '整车能耗需求' },
+        { value: 'REQ-105', label: '软件功能需求' },
+        { value: 'REQ-107', label: '整车安全等级' }
+      ]
+    : [
+        { value: 'REQ-103', label: '高压安全需求' },
+        { value: 'REQ-106', label: '硬件接口需求' },
+        { value: 'REQ-108', label: '诊断功能需求' }
+      ];
+
+  const handleSync = () => {
+    setIsSyncing(true);
+    setTimeout(() => {
+      setIsSyncing(false);
+      setShowSuccess(true);
+      setTimeout(() => setShowSuccess(false), 2000);
+    }, 1200);
+  };
+
+  return (
+    <div style={{padding: 0, fontFamily: 'Inter, Arial, sans-serif', fontSize: 14, background: '#fff', position: 'relative'}}>
+      {/* 标题栏 */}
+      <div style={{padding: '16px 20px 8px 20px', borderBottom: '1px solid #eee', background: '#f7f8fa'}}>
+        <div style={{fontWeight:'bold',fontSize:17,marginBottom:2}}>需求同步</div>
+        <div style={{color:'#888',fontSize:13}}>配置需求同步属性</div>
+      </div>
+      {/* General 分组 */}
+      <div style={{padding: '16px 20px 8px 20px', borderBottom:'1px solid #eee'}}>
+        <div style={{fontWeight:'bold',marginBottom:8}}>General</div>
+        <div style={{marginBottom:6}}>
+          <div style={{fontSize:13, color:'#222'}}>需求源</div>
+          <select style={{width:'100%',marginBottom:4}} value={source} onChange={e=>setSource(e.target.value)}>
+            {sourceOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+          </select>
+        </div>
+        <div style={{marginBottom:6}}>
+          <div style={{fontSize:13, color:'#222'}}>需求编号</div>
+          <select style={{width:'100%',marginBottom:4}} value={syncId} onChange={e=>setSyncId(e.target.value)}>
+            {idOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}（{opt.value}）</option>)}
+          </select>
+        </div>
+        <div style={{marginBottom:6}}>
+          <div style={{fontSize:13, color:'#222'}}>同步方式</div>
+          <select style={{width:'100%',marginBottom:4}} value={syncType} onChange={e=>setSyncType(e.target.value)}>
+            {syncTypeOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+          </select>
+        </div>
+      </div>
+      {/* Owner 分组 */}
+      <div style={{padding: '16px 20px 8px 20px', borderBottom:'1px solid #eee'}}>
+        <div style={{fontWeight:'bold',marginBottom:8}}>负责人</div>
+        <input style={{width:'100%',marginBottom:4}} value={owner} onChange={e=>setOwner(e.target.value)} placeholder="请输入负责人" />
+      </div>
+      {/* 备注分组 */}
+      <div style={{padding: '16px 20px 8px 20px', borderBottom:'1px solid #eee'}}>
+        <div style={{fontWeight:'bold',marginBottom:8}}>备注</div>
+        <input style={{width:'100%',marginBottom:4}} value={remark} onChange={e=>setRemark(e.target.value)} placeholder="可填写备注" />
+      </div>
+      {/* 操作按钮区域 */}
+      <div style={{padding: '16px 20px', borderTop: '1px solid #eee', background: '#fafafa'}}>
+        <button
+          onClick={handleSync}
+          disabled={isSyncing || !syncId || !owner}
+          style={{
+            background: isSyncing || !syncId || !owner ? '#ccc' : '#1890ff',
+            color: 'white',
+            border: 'none',
+            padding: '8px 16px',
+            borderRadius: '4px',
+            cursor: isSyncing || !syncId || !owner ? 'not-allowed' : 'pointer',
+            fontSize: '14px',
+            fontWeight: '500',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px'
+          }}
+        >
+          {isSyncing ? (
+            <>
+              <div style={{
+                width: '12px',
+                height: '12px',
+                border: '2px solid #fff',
+                borderTop: '2px solid transparent',
+                borderRadius: '50%',
+                animation: 'spin 1s linear infinite'
+              }}></div>
+              同步中...
+            </>
+          ) : (
+            '同步需求'
+          )}
+        </button>
+      </div>
+      {/* 成功提示 */}
+      {showSuccess && (
+        <div style={{
+          position: 'fixed',
+          top: '20px',
+          right: '20px',
+          background: '#52c41a',
+          color: 'white',
+          padding: '12px 20px',
+          borderRadius: '6px',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+          zIndex: 10000,
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+          animation: 'slideIn 0.3s ease'
+        }}>
+          <span style={{fontSize: '16px'}}>✓</span>
+          <span>需求同步成功</span>
+        </div>
+      )}
+      {/* CSS动画 */}
+      <style>{`
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+        @keyframes slideIn {
+          from {
+            transform: translateX(100%);
+            opacity: 0;
+          }
+          to {
+            transform: translateX(0);
+            opacity: 1;
+          }
+        }
+      `}</style>
     </div>
   );
 }

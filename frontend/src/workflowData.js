@@ -27,7 +27,7 @@ export const initialNodes = [
       label: '🛠 功能与架构设计',
       active: true,
       subNodes: [
-        { id: 'sync', label: '同步需求', active: true, required: true, tool: 'EA' },
+        { id: 'sync', label: '需求同步', active: true, required: true, tool: 'EA' },
         { id: 'design', label: '功能与架构设计', active: true, required: true, tool: 'EA' },
         { id: 'review', label: '系统架构评审', active: false, required: false, tool: 'WebCollaboration' },
         { id: 'publish', label: '模型发布', active: false, required: false, tool: 'EA' }
